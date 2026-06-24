@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
+const STORAGE = process.env.NEXT_PUBLIC_SUPABASE_STORAGE;
 
 function Bloom() {
   return (
@@ -327,7 +328,7 @@ export default function Hero() {
 
         <video
           ref={videoRef}
-          src="/videosite_scrub.mp4"
+          src={`${STORAGE}/videosite_scrub.mp4`}
           muted playsInline preload="auto"
           aria-hidden="true"
           style={{

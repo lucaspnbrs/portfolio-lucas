@@ -2,6 +2,9 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
+
+const STORAGE = process.env.NEXT_PUBLIC_SUPABASE_STORAGE;
+
 function eio(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
@@ -164,7 +167,7 @@ export default function About() {
 
         <video
           ref={videoRef}
-          src="/2-dobrasite-scrub.mp4"
+          src={`${STORAGE}/2-dobrasite-scrub.mp4`}
           muted playsInline preload="auto"
           aria-hidden="true"
           style={{
