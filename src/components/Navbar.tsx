@@ -5,8 +5,8 @@ import Image from "next/image";
 
 const ITEMS = [
   { label: "Início",   href: "#",        num: "01" },
-  { label: "Projetos", href: "#projects", num: "02" },
   { label: "Sobre",    href: "#about",    num: "03" },
+   { label: "Projetos", href: "#projects", num: "02" },
   { label: "Contato",  href: "#contact",  num: "04" },
 ];
 
