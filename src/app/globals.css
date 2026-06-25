@@ -304,9 +304,32 @@ canvas { display: block }
     transition: none !important;
   }
 
-  /* ── Sticky section heights ── */
-  #hero  { height: 180vh; }
-  #about { height: 160vh; }
+  /* ── Sticky section heights: 100vh on mobile removes empty scroll gaps.
+     The video-scrub effect is desktop-only; on mobile these sections
+     should just fill one screen and scroll normally. ── */
+  #hero  { height: 100vh !important; }
+  #about { height: 100vh !important; }
+
+  /* ── Hero inner sticky div: no extra scroll on mobile ── */
+  #hero > div {
+    position: relative !important;
+  }
+
+  /* ── About inner sticky div: position relative + flex-end so the
+     content strip sits at the bottom without depending on margin-top:auto
+     (which is unreliable in sticky contexts on iOS Safari). ── */
+  #about > div {
+    position: relative !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Reset margin-top:auto (set in JS) so justify-content:flex-end takes over */
+  .about-content-strip {
+    margin-top: 0 !important;
+  }
 
   /* ── Section padding — navbar is ~72px on mobile, so all
      sections need at least 80px top padding to clear it. ── */
