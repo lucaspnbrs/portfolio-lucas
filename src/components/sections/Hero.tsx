@@ -11,7 +11,6 @@ function Bloom() {
       position:"absolute", inset:0,
       pointerEvents:"none", overflow:"hidden",
     }}>
-
       <div style={{
         position:"absolute",
         width:"80vw", height:"80vw",
@@ -32,10 +31,9 @@ function Bloom() {
   );
 }
 
-
 function Grid() {
   return (
-    <div aria-hidden="true" style={{
+    <div aria-hidden="true" className="hero-grid" style={{
       position:"absolute", bottom:0, left:0, right:0, height:"48%",
       backgroundImage:`
         linear-gradient(rgba(27,152,224,.08) 1px, transparent 1px),
@@ -143,7 +141,7 @@ function FloatOrbs() {
 
 function ScrollHint() {
   return (
-    <div aria-hidden="true" style={{
+    <div aria-hidden="true" className="hero-scroll-hint" style={{
       position:"absolute", bottom:32, left:"50%", transform:"translateX(-50%)",
       display:"flex", flexDirection:"column", alignItems:"center", gap:10,
       opacity:0, animation:"fade-up .6s var(--ease) 2.2s forwards",
@@ -176,6 +174,7 @@ function SoundButton({ on, onClick }: { on: boolean; onClick: () => void }) {
     <button
       onClick={onClick}
       aria-label={on ? "Mute" : "Unmute"}
+      className="hero-sound-btn"
       style={{
         position:"absolute", bottom:32, right:40, zIndex:20,
         display:"flex", alignItems:"center", gap:8,
@@ -232,14 +231,13 @@ export default function Hero() {
 
     let lastProgress = 0;
     let lastProgressTime = 0;
-    let scrollVel = 0; 
+    let scrollVel = 0;
 
     const flushSeek = () => {
       if (pendingTime !== null && video.readyState >= 2) {
         const target = pendingTime;
 
         if (!video.muted) {
-      
           const rate = scrollVel * video.duration;
           if (scrollVel > 0.01) {
             video.playbackRate = Math.min(3.5, Math.max(0.07, rate));
@@ -254,7 +252,6 @@ export default function Hero() {
             }
           }
         } else {
-
           const v = video as HTMLVideoElement & { fastSeek?: (t: number) => void };
           v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
         }
@@ -275,7 +272,7 @@ export default function Hero() {
             if (lastProgressTime > 0) {
               const dt = Math.max(now - lastProgressTime, 1);
               const rawVel = (self.progress - lastProgress) / (dt / 1000);
-              scrollVel = scrollVel * 0.68 + rawVel * 0.32; // EMA smooth
+              scrollVel = scrollVel * 0.68 + rawVel * 0.32;
             }
             lastProgress = self.progress;
             lastProgressTime = now;
@@ -314,7 +311,6 @@ export default function Hero() {
     const next = !soundOn;
     video.muted = !next;
     if (next) {
- 
       video.play().catch(() => {});
     } else {
       video.pause();
@@ -338,7 +334,6 @@ export default function Hero() {
           }}
         />
 
-    
         <div aria-hidden="true" style={{
           position:"absolute", inset:0, zIndex:1,
           background:`linear-gradient(
@@ -355,7 +350,7 @@ export default function Hero() {
         <div style={{ position:"absolute", inset:0, zIndex:2 }}><Grid  /></div>
         <div style={{ position:"absolute", inset:0, zIndex:3 }}><FloatOrbs /></div>
 
-        <div style={{
+        <div className="hero-content" style={{
           position:"relative", zIndex:10,
           height:"100%",
           display:"flex", flexDirection:"column",
@@ -364,35 +359,33 @@ export default function Hero() {
           padding:"140px 48px 100px",
         }}>
 
-
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:36 }}>
+          <div className="hero-eyebrow-wrap" style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:36 }}>
             <div ref={lineRef} style={{
               width:48, height:1,
               background:`linear-gradient(90deg, transparent, var(--accent), transparent)`,
               marginBottom:18,
             }} />
 
-            <div ref={eyebrowRef} style={{
+            <div ref={eyebrowRef} className="hero-eyebrow" style={{
               display:"inline-flex", alignItems:"center", gap:14,
               fontFamily:"var(--f-body)", fontSize:"clamp(11px, 1.1vw, 13px)", fontWeight:400,
               letterSpacing:"3.5px", textTransform:"uppercase",
               color:"var(--text-muted)",
             }}>
-              <span style={{ width:24, height:1, background:"var(--accent)", display:"block" }} />
+              <span className="hero-eyebrow-line" style={{ width:24, height:1, background:"var(--accent)", display:"block" }} />
               Arquitetura de Software e Edição de Vídeos
-              <span style={{ width:24, height:1, background:"var(--accent)", display:"block" }} />
+              <span className="hero-eyebrow-line" style={{ width:24, height:1, background:"var(--accent)", display:"block" }} />
             </div>
           </div>
 
-          <h1 ref={titleRef} style={{
+          <h1 ref={titleRef} className="hero-title" style={{
             fontFamily:"var(--f-display)",
-            fontSize:"clamp(52px, 9.2vw, 138px)",
+            fontSize:"clamp(40px, 9.2vw, 138px)",
             fontWeight:900,
             lineHeight:.88,
             letterSpacing:"-.02em",
             textTransform:"uppercase",
             marginBottom:32,
-            whiteSpace:"nowrap",
             position:"relative",
             color:"var(--text)",
           }}>
@@ -407,9 +400,9 @@ export default function Hero() {
             }} />
           </h1>
 
-          <p ref={copyRef} style={{
+          <p ref={copyRef} className="hero-copy" style={{
             fontFamily:"var(--f-body)",
-            fontSize:"clamp(15px, 1.4vw, 18px)",
+            fontSize:"clamp(13px, 1.4vw, 18px)",
             fontWeight:400,
             lineHeight:1.75,
             color:"var(--text-2)",
@@ -422,7 +415,7 @@ export default function Hero() {
             para a sua marca ser levada a sério e o seu sistema nunca ser o gargalo.
           </p>
 
-          <div ref={subRef} style={{
+          <div ref={subRef} className="hero-tags" style={{
             display:"flex", flexWrap:"wrap", gap:8,
             justifyContent:"center",
             margin:"0 auto 52px",
@@ -443,7 +436,7 @@ export default function Hero() {
             ))}
           </div>
 
-          <div ref={ctasRef} style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <div ref={ctasRef} className="hero-ctas" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
             <a href="#projects" className="btn btn--hi btn--lg">Ver projetos</a>
             <a href="#contact"  className="btn btn--ghost btn--lg">Fale comigo →</a>
           </div>
@@ -454,6 +447,47 @@ export default function Hero() {
 
         <style>{`
           @keyframes spark { to { transform:translateX(-50%) scaleX(1) } }
+
+          @media (max-width: 767px) {
+            .hero-content {
+              padding: 96px 20px 60px !important;
+              justify-content: center !important;
+            }
+            .hero-eyebrow-wrap { margin-bottom: 18px !important; }
+            .hero-eyebrow {
+              font-size: 9px !important;
+              letter-spacing: 2px !important;
+              gap: 8px !important;
+            }
+            .hero-eyebrow-line { display: none !important; }
+            .hero-title { margin-bottom: 16px !important; }
+            .hero-copy {
+              font-size: 13px !important;
+              line-height: 1.6 !important;
+              margin: 0 auto 18px !important;
+            }
+            .hero-tags {
+              margin: 0 auto 24px !important;
+              gap: 6px !important;
+            }
+            .hero-tags span {
+              font-size: 9px !important;
+              padding: 5px 12px !important;
+              letter-spacing: 1.5px !important;
+            }
+            .hero-ctas {
+              flex-direction: column !important;
+              width: 100% !important;
+              gap: 10px !important;
+            }
+            .hero-ctas .btn {
+              width: 100% !important;
+              justify-content: center !important;
+            }
+            .hero-sound-btn { bottom: 16px !important; right: 16px !important; }
+            .hero-scroll-hint { display: none !important; }
+            .hero-grid { display: none !important; }
+          }
         `}</style>
       </div>
     </section>

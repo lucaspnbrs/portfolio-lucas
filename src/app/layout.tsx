@@ -30,7 +30,7 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://lucaspnbrz.dev"),
   title: {
-    default: "Lucas Barros — Developer & Designer",
+    default: "Lucas Barros — Arquiteto de Software",
     template: "%s | Lucas Barros",
   },
   description:

@@ -17,6 +17,7 @@ function SoundButton({ on, onClick }: { on: boolean; onClick: () => void }) {
     <button
       onClick={onClick}
       aria-label={on ? "Mute" : "Unmute"}
+      className="about-sound-btn"
       style={{
         position: "absolute", bottom: 32, right: 40, zIndex: 20,
         display: "flex", alignItems: "center", gap: 8,
@@ -151,6 +152,26 @@ export default function About() {
   }, [soundOn]);
 
   return (
+    <>
+    <style>{`
+      @media (max-width: 767px) {
+        .about-info-grid {
+          grid-template-columns: 1fr !important;
+          gap: 20px !important;
+        }
+        .about-content-strip {
+          padding: 0 20px 28px !important;
+        }
+        .about-stats {
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          gap: 20px !important;
+          flex-wrap: wrap !important;
+        }
+        .about-stats > div { text-align: left !important; }
+        .about-sound-btn { bottom: 12px !important; right: 16px !important; }
+      }
+    `}</style>
     <section
       ref={wrapperRef}
       id="about"
@@ -206,6 +227,7 @@ export default function About() {
 
         <div
           ref={contentRef}
+          className="about-content-strip"
           style={{
             position: "absolute",
             bottom: 0, left: 0, right: 0,
@@ -222,7 +244,7 @@ export default function About() {
             marginBottom: "clamp(24px, 4vh, 40px)",
           }} />
 
-          <div style={{
+          <div className="about-info-grid" style={{
             display: "grid",
             gridTemplateColumns: "1fr auto",
             gap: "clamp(32px, 6vw, 80px)",
@@ -271,7 +293,7 @@ export default function About() {
               </p>
             </div>
 
-            <div style={{
+            <div className="about-stats" style={{
               display: "flex",
               flexDirection: "column",
               gap: "clamp(20px, 3vh, 32px)",
@@ -309,5 +331,6 @@ export default function About() {
 
       </div>
     </section>
+    </>
   );
 }

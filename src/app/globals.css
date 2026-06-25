@@ -262,6 +262,27 @@ canvas { display: block }
 }
 
 /* ═══════════════════════════════════════════
+   MOBILE RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Services grid: single column */
+  #services { padding: 60px 20px !important; }
+
+  /* About: compact content strip */
+  #about .about-grid { grid-template-columns: 1fr !important; }
+
+  /* Ensure sticky sections don't overflow */
+  section[style*="height:300vh"],
+  section[style*="height: 300vh"] { height: 220vh !important; }
+
+  /* Buttons full-width on mobile */
+  .btn--lg { width: 100%; justify-content: center; }
+
+  /* Reduce padding on all sections */
+  main > * { overflow-x: hidden; }
+}
+
+/* ═══════════════════════════════════════════
    PAGE ENTRANCE
 ═══════════════════════════════════════════ */
 @keyframes page-enter {

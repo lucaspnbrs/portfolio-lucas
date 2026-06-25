@@ -88,7 +88,7 @@ const SERVICES = [
     title: "Produção\nAudiovisual",
     tagline: "Vídeo com identidade para marcas sérias.",
     description: "Edição, motion graphics e identidade visual em vídeo para marcas que precisam ser levadas a sério — não apenas vistas.",
-    items: ["Edição de vídeos institucionais", "Motion graphics e After Effects", "Identidade visual audiovisual", "Reels para redes sociais", "Color grade e sound design"],
+    items: ["Edição de vídeos institucionais", "Motion graphics e CapCut", "Identidade visual audiovisual", "Reels para redes sociais", "Color grade e sound design"],
     accent: "#4A78C4", glow: "rgba(74,120,196,.15)",
   },
 ] as const;

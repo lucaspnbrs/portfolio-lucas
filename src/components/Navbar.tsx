@@ -49,6 +49,7 @@ export default function Navbar() {
             width={180}
             height={99}
             priority
+            className="nav-logo"
             style={{ objectFit: "contain", filter: "brightness(0) invert(1)", opacity: 1 }}
           />
         </a>
@@ -252,7 +253,10 @@ export default function Navbar() {
         @media (max-width: 640px) {
           #nav-menu { grid-template-columns: 1fr !important; }
           .nav-left  { display: none !important; }
-          header     { padding: 18px 24px !important; }
+          header     { padding: 16px 20px !important; }
+          .nav-logo  { width: 120px !important; height: auto !important; }
+          nav        { padding: 40px 32px !important; }
+          .nav-link  { font-size: 36px !important; padding: 12px 0 !important; }
         }
       `}</style>
     </>

@@ -96,7 +96,7 @@ export default function Contact() {
           Me conta o que você precisa — respondi em menos de 24h.
         </p>
 
-        <div className="rv" style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: "clamp(40px,7vh,80px)" }}>
+        <div className="rv contact-ctas" style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: "clamp(40px,7vh,80px)" }}>
           <button
             onClick={copyEmail}
             className="btn btn--hi btn--lg"
@@ -133,6 +133,20 @@ export default function Contact() {
           </a>
         </div>
 
+
+        <style>{`
+          @media (max-width: 767px) {
+            .contact-ctas {
+              flex-direction: column !important;
+              gap: 10px !important;
+            }
+            .contact-ctas .btn {
+              width: 100% !important;
+              justify-content: center !important;
+              min-width: 0 !important;
+            }
+          }
+        `}</style>
 
         <hr className="rule" style={{ marginBottom: 24 }} />
 
