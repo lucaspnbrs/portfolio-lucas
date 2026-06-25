@@ -93,14 +93,17 @@
    RESET
 ═══════════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0 }
-html  { scroll-behavior: auto }
+html  {
+  scroll-behavior: auto;
+  /* overflow-x: clip doesn't create a stacking context — won't break position:sticky on iOS Safari */
+  overflow-x: clip;
+}
 body  {
   background: var(--ground);
   color: var(--text);
   font-family: var(--f-body);
   font-size: 16px;
   line-height: 1.6;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 a      { text-decoration: none; color: inherit }
@@ -262,24 +265,43 @@ canvas { display: block }
 }
 
 /* ═══════════════════════════════════════════
+   SECTION HEIGHTS (controlled here so media queries can override)
+═══════════════════════════════════════════ */
+#hero  { height: 300vh; }
+#about { height: 300vh; }
+
+/* ═══════════════════════════════════════════
    MOBILE RESPONSIVE
 ═══════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* Services grid: single column */
-  #services { padding: 60px 20px !important; }
+  /* Scroll-reveal: always visible on mobile.
+     Fancy reveal is a desktop-only enhancement. */
+  .rv {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 
-  /* About: compact content strip */
-  #about .about-grid { grid-template-columns: 1fr !important; }
+  /* Sticky section heights — reduced so mobile users don't scroll forever */
+  #hero  { height: 180vh; }
+  #about { height: 160vh; }
 
-  /* Ensure sticky sections don't overflow */
-  section[style*="height:300vh"],
-  section[style*="height: 300vh"] { height: 220vh !important; }
+  /* Sections padding */
+  #services { padding: 56px 20px !important; }
+  #contact  { padding: 72px 20px 48px !important; }
 
-  /* Buttons full-width on mobile */
-  .btn--lg { width: 100%; justify-content: center; }
+  /* Buttons full-width */
+  .btn--lg {
+    height: 48px !important;
+    padding: 0 22px !important;
+    font-size: 11px !important;
+  }
 
-  /* Reduce padding on all sections */
-  main > * { overflow-x: hidden; }
+  /* Typography scale */
+  .hdg { font-size: clamp(28px, 7vw, 48px) !important; }
+
+  /* Prevent any section from causing horizontal overflow */
+  main section { overflow-x: hidden; }
 }
 
 /* ═══════════════════════════════════════════

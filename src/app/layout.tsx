@@ -70,8 +70,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`h-full ${bigShoulders.variable} ${dmMono.variable}`}>
-      <body className="min-h-full flex flex-col overflow-x-hidden antialiased">
+    <html lang="pt-BR" className={`h-full overflow-x-hidden ${bigShoulders.variable} ${dmMono.variable}`}>
+      <body className="min-h-full flex flex-col antialiased">
         <Cursor />
         {children}
       </body>

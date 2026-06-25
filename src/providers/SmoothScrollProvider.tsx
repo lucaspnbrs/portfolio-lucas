@@ -24,12 +24,22 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     lenisRef.current = lenis;
     lenis.on("scroll", ScrollTrigger.update);
 
+    // On mobile, native scroll events fire independently of Lenis — ensure
+    // ScrollTrigger updates on every native scroll event as a backup.
+    const onNativeScroll = () => ScrollTrigger.update();
+    window.addEventListener("scroll", onNativeScroll, { passive: true });
+
     const ticker = gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
     gsap.ticker.lagSmoothing(0);
 
+    // Refresh trigger positions after fonts and layout settle.
+    const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 400);
+
     return () => {
+      clearTimeout(refreshTimer);
+      window.removeEventListener("scroll", onNativeScroll);
       gsap.ticker.remove(ticker);
       lenis.destroy();
     };

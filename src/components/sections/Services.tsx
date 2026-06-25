@@ -110,7 +110,7 @@ export default function Services() {
   return (
     <section ref={sectionRef} id="services" style={{
       background: "var(--ground-mid)",
-      padding: "clamp(80px,12vh,140px) clamp(28px,6vw,96px)",
+      padding: "clamp(60px,12vh,140px) clamp(20px,6vw,96px)",
       position: "relative",
       overflow: "hidden",
     }}>
@@ -124,11 +124,11 @@ export default function Services() {
 
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
-        <div className="rv" style={{ marginBottom: "clamp(48px,7vh,88px)" }}>
+        <div className="rv" style={{ marginBottom: "clamp(32px,7vh,88px)" }}>
           <span className="lbl">03 · Especialidades</span>
           <h2 style={{
             fontFamily: "var(--f-display)",
-            fontSize: "clamp(40px,6vw,80px)",
+            fontSize: "clamp(32px,6vw,80px)",
             fontWeight: 900, lineHeight: 1,
             letterSpacing: "-.03em",
             color: "var(--text)", marginTop: 20,
@@ -139,8 +139,8 @@ export default function Services() {
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))",
-          gap: "clamp(16px,2.5vw,24px)",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: "clamp(12px,2.5vw,24px)",
         }}>
           {SERVICES.map((svc, i) => (
             <ServiceCard key={svc.num} svc={svc} delay={i * 0.08} />

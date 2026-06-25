@@ -66,7 +66,13 @@ export default function About() {
 
     let lastProgress = 0;
     let lastProgressTime = 0;
-    let scrollVel = 0; 
+    let scrollVel = 0;
+
+    // Mobile: force browser to load the video on first user touch.
+    const unlockVideo = () => {
+      video.play().then(() => video.pause()).catch(() => {});
+    };
+    document.addEventListener("touchstart", unlockVideo, { once: true, passive: true });
 
     const flush = () => {
       if (pendingP !== null) {
@@ -87,6 +93,7 @@ export default function About() {
               if (!video.paused) video.pause();
             }
           } else {
+            if (!video.paused) video.pause();
             const target = raw * video.duration;
             const v = video as HTMLVideoElement & { fastSeek?: (n: number) => void };
             v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
@@ -128,6 +135,7 @@ export default function About() {
     }, wrapper);
 
     return () => {
+      document.removeEventListener("touchstart", unlockVideo);
       if (rafId) cancelAnimationFrame(rafId);
       ctx?.revert();
     };
@@ -170,7 +178,7 @@ export default function About() {
     <section
       ref={wrapperRef}
       id="about"
-      style={{ position: "relative", height: "300vh", background: "#13293D" }}
+      style={{ position: "relative", background: "#13293D" }}
     >
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
 

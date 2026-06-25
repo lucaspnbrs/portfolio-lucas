@@ -232,6 +232,13 @@ export default function Hero() {
     let lastProgressTime = 0;
     let scrollVel = 0;
 
+    // Mobile: play+pause on first touch to unlock the video element so the
+    // browser actually loads the media (preload="auto" is ignored on iOS).
+    const unlockVideo = () => {
+      video.play().then(() => video.pause()).catch(() => {});
+    };
+    document.addEventListener("touchstart", unlockVideo, { once: true, passive: true });
+
     const flushSeek = () => {
       if (pendingTime !== null && video.readyState >= 2) {
         const target = pendingTime;
@@ -251,6 +258,8 @@ export default function Hero() {
             }
           }
         } else {
+          // Pause autoplay before scrubbing so playhead stays at scroll position.
+          if (!video.paused) video.pause();
           const v = video as HTMLVideoElement & { fastSeek?: (t: number) => void };
           v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
         }
@@ -296,6 +305,7 @@ export default function Hero() {
     }, wrapper);
 
     return () => {
+      document.removeEventListener("touchstart", unlockVideo);
       if (rafId) cancelAnimationFrame(rafId);
       stRef.current = null;
       ctx.revert();
@@ -316,7 +326,7 @@ export default function Hero() {
   }, [soundOn]);
 
   return (
-    <section ref={wrapperRef} style={{ position:"relative", height:"300vh" }}>
+    <section ref={wrapperRef} id="hero" style={{ position:"relative" }}>
       <div style={{ position:"sticky", top:0, height:"100vh", overflow:"hidden" }}>
 
         <video
