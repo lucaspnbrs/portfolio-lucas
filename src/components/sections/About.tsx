@@ -61,6 +61,12 @@ export default function About() {
     const content = contentRef.current;
     if (!video || !wrapper || !content) return;
 
+    // Mobile: video plays as ambient looping background — no scroll scrub.
+    if ('ontouchstart' in window) {
+      video.loop = true;
+      return;
+    }
+
     let rafId: number | null = null;
     let pendingP: number | null = null;
     let ctx: gsap.Context;
@@ -69,7 +75,6 @@ export default function About() {
     let lastProgressTime = 0;
     let scrollVel = 0;
 
-    // Mobile: force browser to load the video on first user touch.
     const unlockVideo = () => {
       video.play().then(() => video.pause()).catch(() => {});
     };

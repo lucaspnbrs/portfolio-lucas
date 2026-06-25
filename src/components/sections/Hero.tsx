@@ -226,6 +226,14 @@ export default function Hero() {
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
 
+    // Mobile: video plays as ambient looping background — no scroll scrub.
+    // Scroll scrubbing is a desktop-only feature; on mobile extra section
+    // height creates a visual "vão" when the sticky releases.
+    if ('ontouchstart' in window) {
+      video.loop = true;
+      return;
+    }
+
     let rafId: number | null = null;
     let pendingTime: number | null = null;
 
@@ -233,8 +241,6 @@ export default function Hero() {
     let lastProgressTime = 0;
     let scrollVel = 0;
 
-    // Mobile: play+pause on first touch to unlock the video element so the
-    // browser actually loads the media (preload="auto" is ignored on iOS).
     const unlockVideo = () => {
       video.play().then(() => video.pause()).catch(() => {});
     };
