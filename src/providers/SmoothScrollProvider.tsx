@@ -19,6 +19,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       touchMultiplier: 2,
+      syncTouch: true,
     });
 
     lenisRef.current = lenis;

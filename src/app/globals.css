@@ -304,16 +304,15 @@ canvas { display: block }
     transition: none !important;
   }
 
-  /* ── Sticky section heights: 100vh on mobile removes empty scroll gaps.
-     The video-scrub effect is desktop-only; on mobile these sections
-     should just fill one screen.
+  /* ── Sticky section heights: restore scroll range so ScrollTrigger has
+     a window to calculate progress (start ≠ end). With syncTouch:true in
+     Lenis and autoPlay on the videos, the scroll animation now works on
+     mobile. Hero: 80vh of scrub range; About: 60vh.
      IMPORTANT: do NOT override position on the inner sticky divs —
-     the video (position:absolute; inset:0) needs the sticky/positioned
-     parent for its containing block; changing it to relative broke video
-     rendering on iOS. With height:100vh on the section, the sticky div
-     never actually "sticks" (no extra scroll), but the layout is correct. ── */
-  #hero  { height: 100vh !important; }
-  #about { height: 100vh !important; }
+     the video (position:absolute; inset:0) needs the sticky parent as
+     containing block; changing it to relative broke video on iOS. ── */
+  #hero  { height: 180vh; }
+  #about { height: 160vh; }
 
   /* ── About inner sticky div: flex-end positions the content strip at
      the bottom. position:sticky is intentionally kept (not overridden)
