@@ -306,27 +306,26 @@ canvas { display: block }
 
   /* ── Sticky section heights: 100vh on mobile removes empty scroll gaps.
      The video-scrub effect is desktop-only; on mobile these sections
-     should just fill one screen and scroll normally. ── */
+     should just fill one screen.
+     IMPORTANT: do NOT override position on the inner sticky divs —
+     the video (position:absolute; inset:0) needs the sticky/positioned
+     parent for its containing block; changing it to relative broke video
+     rendering on iOS. With height:100vh on the section, the sticky div
+     never actually "sticks" (no extra scroll), but the layout is correct. ── */
   #hero  { height: 100vh !important; }
   #about { height: 100vh !important; }
 
-  /* ── Hero inner sticky div: no extra scroll on mobile ── */
-  #hero > div {
-    position: relative !important;
-  }
-
-  /* ── About inner sticky div: position relative + flex-end so the
-     content strip sits at the bottom without depending on margin-top:auto
-     (which is unreliable in sticky contexts on iOS Safari). ── */
+  /* ── About inner sticky div: flex-end positions the content strip at
+     the bottom. position:sticky is intentionally kept (not overridden)
+     so the absolutely-positioned video retains its containing block. ── */
   #about > div {
-    position: relative !important;
-    height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: flex-end !important;
   }
 
-  /* Reset margin-top:auto (set in JS) so justify-content:flex-end takes over */
+  /* Reset margin-top:auto (set in JS inline style) so justify-content
+     flex-end takes over the vertical positioning on mobile. ── */
   .about-content-strip {
     margin-top: 0 !important;
   }
