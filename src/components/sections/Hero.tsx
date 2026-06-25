@@ -227,7 +227,6 @@ export default function Hero() {
 
     let rafId: number | null = null;
     let pendingTime: number | null = null;
-    let ctx: gsap.Context;
 
     let lastProgress = 0;
     let lastProgressTime = 0;
@@ -260,48 +259,46 @@ export default function Hero() {
       rafId = null;
     };
 
-    const setup = () => {
-      ctx = gsap.context(() => {
-        const st = ScrollTrigger.create({
-          trigger: wrapper,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1,
-          onUpdate(self) {
-            const now = performance.now();
-            if (lastProgressTime > 0) {
-              const dt = Math.max(now - lastProgressTime, 1);
-              const rawVel = (self.progress - lastProgress) / (dt / 1000);
-              scrollVel = scrollVel * 0.68 + rawVel * 0.32;
-            }
-            lastProgress = self.progress;
-            lastProgressTime = now;
+    // Run immediately — no longer gated on video loading
+    const ctx = gsap.context(() => {
+      // Entrance animation — runs on mount regardless of video state
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.from(lineRef.current,   { scaleX: 0, duration: .9, delay: .3, transformOrigin:"left" })
+        .from(eyebrowRef.current, { y: 16, opacity: 0, duration: .6 }, "-=.4")
+        .from(titleRef.current,   { y: 80, opacity: 0, duration: 1.1, rotateX: 10, transformPerspective: 1200 }, "-=.35")
+        .from(copyRef.current,    { y: 24, opacity: 0, duration: .8 }, "-=.55")
+        .from(subRef.current,     { y: 20, opacity: 0, duration: .7 }, "-=.55")
+        .from(ctasRef.current,    { y: 16, opacity: 0, duration: .6 }, "-=.5");
 
-            if (video.readyState >= 1 && video.duration) {
-              pendingTime = self.progress * video.duration;
-              if (!rafId) rafId = requestAnimationFrame(flushSeek);
-            }
-          },
-        });
-        stRef.current = st;
+      // ScrollTrigger for video scrubbing — onUpdate guards readyState internally
+      const st = ScrollTrigger.create({
+        trigger: wrapper,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+        onUpdate(self) {
+          const now = performance.now();
+          if (lastProgressTime > 0) {
+            const dt = Math.max(now - lastProgressTime, 1);
+            const rawVel = (self.progress - lastProgress) / (dt / 1000);
+            scrollVel = scrollVel * 0.68 + rawVel * 0.32;
+          }
+          lastProgress = self.progress;
+          lastProgressTime = now;
 
-        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        tl.from(lineRef.current,   { scaleX: 0, duration: .9, delay: .3, transformOrigin:"left" })
-          .from(eyebrowRef.current, { y: 16, opacity: 0, duration: .6 }, "-=.4")
-          .from(titleRef.current,   { y: 80, opacity: 0, duration: 1.1, rotateX: 10, transformPerspective: 1200 }, "-=.35")
-          .from(copyRef.current,    { y: 24, opacity: 0, duration: .8 }, "-=.55")
-          .from(subRef.current,     { y: 20, opacity: 0, duration: .7 }, "-=.55")
-          .from(ctasRef.current,    { y: 16, opacity: 0, duration: .6 }, "-=.5");
-      }, wrapper);
-    };
-
-    if (video.readyState >= 1) setup();
-    else video.addEventListener("loadedmetadata", setup, { once: true });
+          if (video.readyState >= 1 && video.duration) {
+            pendingTime = self.progress * video.duration;
+            if (!rafId) rafId = requestAnimationFrame(flushSeek);
+          }
+        },
+      });
+      stRef.current = st;
+    }, wrapper);
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
       stRef.current = null;
-      ctx?.revert();
+      ctx.revert();
     };
   }, []);
 

@@ -72,28 +72,28 @@ export default function About() {
       if (pendingP !== null) {
         const raw = pendingP;
 
-        if (!video.muted) {
-
-          const rate = scrollVel * video.duration;
-          if (scrollVel > 0.01) {
-            video.playbackRate = Math.min(3.5, Math.max(0.07, rate));
-            if (video.paused) video.play().catch(() => {});
-            const target = raw * video.duration;
-            if (Math.abs(video.currentTime - target) > 1.5) {
-              video.currentTime = target;
+        // Video scrubbing — only if video is ready
+        if (video.readyState >= 2 && video.duration) {
+          if (!video.muted) {
+            const rate = scrollVel * video.duration;
+            if (scrollVel > 0.01) {
+              video.playbackRate = Math.min(3.5, Math.max(0.07, rate));
+              if (video.paused) video.play().catch(() => {});
+              const target = raw * video.duration;
+              if (Math.abs(video.currentTime - target) > 1.5) {
+                video.currentTime = target;
+              }
+            } else {
+              if (!video.paused) video.pause();
             }
           } else {
-            if (!video.paused) video.pause();
-          }
-        } else {
-
-          if (video.readyState >= 2) {
             const target = raw * video.duration;
             const v = video as HTMLVideoElement & { fastSeek?: (n: number) => void };
             v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
           }
         }
 
+        // Content reveal — always runs regardless of video state
         const cp  = lerp01(raw, 0.42, 0.82);
         const cp2 = eio(cp);
         content.style.opacity   = String(cp);
@@ -103,34 +103,29 @@ export default function About() {
       rafId    = null;
     };
 
-    const setup = () => {
-      ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: wrapper,
-          start:   "top top",
-          end:     "bottom bottom",
-          scrub:   1.0,
-          onUpdate(self) {
-            const now = performance.now();
-            if (lastProgressTime > 0) {
-              const dt = Math.max(now - lastProgressTime, 1);
-              const rawVel = (self.progress - lastProgress) / (dt / 1000);
-              scrollVel = scrollVel * 0.68 + rawVel * 0.32; // EMA smooth
-            }
-            lastProgress = self.progress;
-            lastProgressTime = now;
+    // ScrollTrigger created immediately — no longer gated on video loading
+    ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: wrapper,
+        start:   "top top",
+        end:     "bottom bottom",
+        scrub:   1.0,
+        onUpdate(self) {
+          const now = performance.now();
+          if (lastProgressTime > 0) {
+            const dt = Math.max(now - lastProgressTime, 1);
+            const rawVel = (self.progress - lastProgress) / (dt / 1000);
+            scrollVel = scrollVel * 0.68 + rawVel * 0.32;
+          }
+          lastProgress = self.progress;
+          lastProgressTime = now;
 
-            if (video.readyState >= 1 && video.duration) {
-              pendingP = self.progress;
-              if (!rafId) rafId = requestAnimationFrame(flush);
-            }
-          },
-        });
-      }, wrapper);
-    };
-
-    if (video.readyState >= 1) setup();
-    else video.addEventListener("loadedmetadata", setup, { once: true });
+          // Always fire flush — content reveal must not depend on video
+          pendingP = self.progress;
+          if (!rafId) rafId = requestAnimationFrame(flush);
+        },
+      });
+    }, wrapper);
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
