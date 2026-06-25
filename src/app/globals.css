@@ -274,35 +274,62 @@ canvas { display: block }
    MOBILE RESPONSIVE
 ═══════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* Scroll-reveal: always visible on mobile.
-     Fancy reveal is a desktop-only enhancement. */
+  /* ── Scroll-reveal: skip animation on mobile ── */
   .rv {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
   }
 
-  /* Sticky section heights — reduced so mobile users don't scroll forever */
+  /* ── Hero: bypass GSAP entrance animation on mobile.
+     GSAP sets inline opacity:0 / transform before animating;
+     !important in a stylesheet overrides normal inline styles,
+     ensuring text is immediately visible on mobile. ── */
+  .hero-eyebrow,
+  .hero-title,
+  .hero-copy,
+  .hero-tags,
+  .hero-ctas {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* ── About: content strip always visible on mobile.
+     The JS scroll-driven reveal is a desktop enhancement; on
+     mobile we keep the content readable without needing GSAP. ── */
+  .about-content-strip {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* ── Sticky section heights ── */
   #hero  { height: 180vh; }
   #about { height: 160vh; }
 
-  /* Sections padding */
-  #services { padding: 56px 20px !important; }
-  #contact  { padding: 72px 20px 48px !important; }
-  /* Projects: push content below the fixed navbar */
-  #projects { padding-top: 72px !important; }
+  /* ── Section padding — navbar is ~72px on mobile, so all
+     sections need at least 80px top padding to clear it. ── */
+  #services { padding: 80px 20px 56px !important; }
+  #contact  { padding: 80px 20px 48px !important; }
+  #projects { padding-top: 80px !important; }
 
-  /* Buttons full-width */
+  /* ── Anchor nav: land below the fixed navbar ── */
+  #hero, #about, #projects, #services, #contact {
+    scroll-margin-top: 72px;
+  }
+
+  /* ── Buttons ── */
   .btn--lg {
     height: 48px !important;
     padding: 0 22px !important;
     font-size: 11px !important;
   }
 
-  /* Typography scale */
+  /* ── Typography ── */
   .hdg { font-size: clamp(28px, 7vw, 48px) !important; }
 
-  /* Prevent any section from causing horizontal overflow */
+  /* ── Prevent horizontal overflow ── */
   main section { overflow-x: hidden; }
 }
 
