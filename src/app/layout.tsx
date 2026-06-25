@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     template: "%s | Lucas Barros",
   },
   description:
-    "Portfolio of Lucas Barros — a creative developer building immersive web experiences with modern technologies.",
-  keywords: ["developer", "portfolio", "frontend", "Next.js", "Three.js", "GSAP"],
+    "Portfolio - Lucas Barros — desenvolvendo softwares empresariais que escalam",
+  keywords: ["developer", "portfolio", "development", "Next.js", "Three.js", "frontend", "Video Editor", "sites"],
   authors: [{ name: "Lucas Barros", url: "https://lucaspnbrz.dev" }],
   creator: "Lucas Barros",
   openGraph: {
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "https://lucaspnbrz.dev",
     siteName: "Lucas Barros",
-    title: "Lucas Barros — Developer & Designer",
-    description: "Portfolio of Lucas Barros — creative developer building immersive web experiences.",
+    title: "Lucas Barros — Desenvolvimento de Software e Edição de Vídeos",
+    description: "Portfolio - Lucas Barros — desenvolvendo softwares empresariais que escalam",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Lucas Barros Portfolio" }],
   },
   twitter: {
