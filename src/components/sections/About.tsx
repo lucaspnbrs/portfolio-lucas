@@ -172,7 +172,7 @@ export default function About() {
           flex-wrap: wrap !important;
         }
         .about-stats > div { text-align: left !important; }
-        .about-sound-btn { bottom: 12px !important; right: 16px !important; }
+        .about-sound-btn { position: fixed !important; bottom: 24px !important; right: 16px !important; left: auto !important; }
       }
     `}</style>
     <section
@@ -180,7 +180,7 @@ export default function About() {
       id="about"
       style={{ position: "relative", background: "#13293D" }}
     >
-      <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+      <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         <div aria-hidden="true" style={{
           position: "absolute", top: 0, left: 0, right: 0,
@@ -232,8 +232,8 @@ export default function About() {
           ref={contentRef}
           className="about-content-strip"
           style={{
-            position: "absolute",
-            bottom: 0, left: 0, right: 0,
+            position: "relative",
+            marginTop: "auto",
             zIndex: 10,
             opacity: 0,
             transform: "translateY(52px)",

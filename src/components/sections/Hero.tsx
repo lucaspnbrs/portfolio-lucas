@@ -491,7 +491,7 @@ export default function Hero() {
               width: 100% !important;
               justify-content: center !important;
             }
-            .hero-sound-btn { bottom: 16px !important; right: 16px !important; }
+            .hero-sound-btn { position: fixed !important; bottom: 24px !important; right: 16px !important; left: auto !important; }
             .hero-scroll-hint { display: none !important; }
             .hero-grid { display: none !important; }
           }
