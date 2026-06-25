@@ -216,6 +216,7 @@ export default function Hero() {
   const ctasRef     = useRef<HTMLDivElement>(null);
   const lineRef     = useRef<HTMLDivElement>(null);
 
+  const heroContentRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
 
   const [soundOn, setSoundOn] = useState(false);
@@ -239,29 +240,27 @@ export default function Hero() {
     };
     document.addEventListener("touchstart", unlockVideo, { once: true, passive: true });
 
+    // Pause autoPlay immediately when enough data is ready so the video stays at
+    // frame-0 until the user scrolls (prevents the first seek from jumping).
+    const pauseAtStart = () => { video.pause(); video.currentTime = 0; };
+    video.addEventListener('canplay', pauseAtStart, { once: true });
+
     const flushSeek = () => {
       if (pendingTime !== null && video.readyState >= 2) {
         const target = pendingTime;
 
         if (!video.muted) {
+          // Sound on: always keep playing; match speed to scroll velocity.
           const rate = scrollVel * video.duration;
-          if (scrollVel > 0.01) {
-            video.playbackRate = Math.min(3.5, Math.max(0.07, rate));
-            if (video.paused) video.play().catch(() => {});
-            if (Math.abs(video.currentTime - target) > 1.5) {
-              video.currentTime = target;
-            }
-          } else {
-            if (!video.paused) video.pause();
-            if (Math.abs(video.currentTime - target) > 0.25) {
-              video.currentTime = target;
-            }
+          video.playbackRate = scrollVel > 0.1 ? Math.min(3.5, Math.max(0.5, rate)) : 1;
+          if (video.paused) video.play().catch(() => {});
+          if (scrollVel > 0.1 && Math.abs(video.currentTime - target) > 1.5) {
+            video.currentTime = target;
           }
         } else {
-          // Pause autoplay before scrubbing so playhead stays at scroll position.
+          // Muted scrub: use currentTime for frame-accurate seeking (no keyframe jumps).
           if (!video.paused) video.pause();
-          const v = video as HTMLVideoElement & { fastSeek?: (t: number) => void };
-          v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
+          video.currentTime = target;
         }
       }
       pendingTime = null;
@@ -295,6 +294,21 @@ export default function Hero() {
           lastProgress = self.progress;
           lastProgressTime = now;
 
+          // Fade hero content out smoothly in the last 25% of scroll so the
+          // text exits gracefully instead of abruptly snapping away.
+          const hc = heroContentRef.current;
+          if (hc) {
+            const p = self.progress;
+            if (p > 0.75) {
+              const t = (p - 0.75) / 0.25;
+              hc.style.opacity = String(1 - t);
+              hc.style.transform = `translateY(${-t * 60}px)`;
+            } else if (hc.style.opacity !== '') {
+              hc.style.opacity = '';
+              hc.style.transform = '';
+            }
+          }
+
           if (video.readyState >= 1 && video.duration) {
             pendingTime = self.progress * video.duration;
             if (!rafId) rafId = requestAnimationFrame(flushSeek);
@@ -306,6 +320,7 @@ export default function Hero() {
 
     return () => {
       document.removeEventListener("touchstart", unlockVideo);
+      video.removeEventListener('canplay', pauseAtStart);
       if (rafId) cancelAnimationFrame(rafId);
       stRef.current = null;
       ctx.revert();
@@ -357,7 +372,7 @@ export default function Hero() {
         <div style={{ position:"absolute", inset:0, zIndex:2 }}><Grid  /></div>
         <div style={{ position:"absolute", inset:0, zIndex:3 }}><FloatOrbs /></div>
 
-        <div className="hero-content" style={{
+        <div ref={heroContentRef} className="hero-content" style={{
           position:"relative", zIndex:10,
           height:"100%",
           display:"flex", flexDirection:"column",
@@ -454,6 +469,14 @@ export default function Hero() {
 
         <style>{`
           @keyframes spark { to { transform:translateX(-50%) scaleX(1) } }
+
+          /* Override the global fade-up (which has translateX(-50%)) so the
+             sound button fades in without any horizontal shift. */
+          @keyframes btn-enter {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: none; }
+          }
+          .hero-sound-btn { animation: btn-enter .6s var(--ease) 2.4s both !important; }
 
           @media (max-width: 767px) {
             .hero-content {

@@ -52,6 +52,7 @@ export default function About() {
   const wrapperRef = useRef<HTMLElement>(null);
   const videoRef   = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const stickyRef  = useRef<HTMLDivElement>(null);
   const [soundOn, setSoundOn] = useState(false);
 
   useEffect(() => {
@@ -74,6 +75,10 @@ export default function About() {
     };
     document.addEventListener("touchstart", unlockVideo, { once: true, passive: true });
 
+    // Pause autoPlay immediately when data is ready so frame-0 is shown until scroll.
+    const pauseAtStart = () => { video.pause(); video.currentTime = 0; };
+    video.addEventListener('canplay', pauseAtStart, { once: true });
+
     const flush = () => {
       if (pendingP !== null) {
         const raw = pendingP;
@@ -81,22 +86,19 @@ export default function About() {
         // Video scrubbing — only if video is ready
         if (video.readyState >= 2 && video.duration) {
           if (!video.muted) {
+            // Sound on: always keep playing; match speed to scroll velocity.
+            const target = raw * video.duration;
             const rate = scrollVel * video.duration;
-            if (scrollVel > 0.01) {
-              video.playbackRate = Math.min(3.5, Math.max(0.07, rate));
-              if (video.paused) video.play().catch(() => {});
-              const target = raw * video.duration;
-              if (Math.abs(video.currentTime - target) > 1.5) {
-                video.currentTime = target;
-              }
-            } else {
-              if (!video.paused) video.pause();
+            video.playbackRate = scrollVel > 0.1 ? Math.min(3.5, Math.max(0.5, rate)) : 1;
+            if (video.paused) video.play().catch(() => {});
+            if (scrollVel > 0.1 && Math.abs(video.currentTime - target) > 1.5) {
+              video.currentTime = target;
             }
           } else {
+            // Muted scrub: use currentTime for frame-accurate seeking (no keyframe jumps).
             if (!video.paused) video.pause();
             const target = raw * video.duration;
-            const v = video as HTMLVideoElement & { fastSeek?: (n: number) => void };
-            v.fastSeek ? v.fastSeek(target) : (video.currentTime = target);
+            video.currentTime = target;
           }
         }
 
@@ -105,6 +107,19 @@ export default function About() {
         const cp2 = eio(cp);
         content.style.opacity   = String(cp);
         content.style.transform = `translateY(${(1 - cp2) * 52}px)`;
+
+        // Fade the entire sticky viewport out in the last 25% of scroll so
+        // the section exits gracefully. Fading the parent works even on mobile
+        // where children have opacity:1 !important — parent opacity is multiplicative.
+        const sticky = stickyRef.current;
+        if (sticky) {
+          if (raw > 0.75) {
+            const t = (raw - 0.75) / 0.25;
+            sticky.style.opacity = String(1 - t);
+          } else if (sticky.style.opacity !== '') {
+            sticky.style.opacity = '';
+          }
+        }
       }
       pendingP = null;
       rafId    = null;
@@ -136,6 +151,7 @@ export default function About() {
 
     return () => {
       document.removeEventListener("touchstart", unlockVideo);
+      video.removeEventListener('canplay', pauseAtStart);
       if (rafId) cancelAnimationFrame(rafId);
       ctx?.revert();
     };
@@ -157,6 +173,12 @@ export default function About() {
   return (
     <>
     <style>{`
+      @keyframes about-btn-enter {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: none; }
+      }
+      .about-sound-btn { animation: about-btn-enter .5s var(--ease) .8s both; }
+
       @media (max-width: 767px) {
         .about-info-grid {
           grid-template-columns: 1fr !important;
@@ -180,7 +202,7 @@ export default function About() {
       id="about"
       style={{ position: "relative", background: "#13293D" }}
     >
-      <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      <div ref={stickyRef} style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         <div aria-hidden="true" style={{
           position: "absolute", top: 0, left: 0, right: 0,
