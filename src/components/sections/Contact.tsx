@@ -5,7 +5,7 @@ export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
 
-  const EMAIL = "lucas@lucasbarros.dev";
+  const EMAIL = "lucaspnbrrs@gmail.com";
 
   const copyEmail = () => {
     navigator.clipboard.writeText(EMAIL).then(() => {
