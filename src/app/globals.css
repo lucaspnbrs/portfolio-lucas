@@ -274,13 +274,6 @@ canvas { display: block }
    MOBILE RESPONSIVE
 ═══════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* ── Scroll-reveal: skip animation on mobile ── */
-  .rv {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-
   /* ── Hero: bypass GSAP entrance animation on mobile.
      GSAP sets inline opacity:0 / transform before animating;
      !important in a stylesheet overrides normal inline styles,
@@ -343,12 +336,26 @@ canvas { display: block }
     padding: 0 22px !important;
     font-size: 11px !important;
   }
+  /* Tactile press feedback on touch */
+  .btn:active { transform: scale(0.96) !important; transition: transform 0.1s ease !important; }
 
   /* ── Typography ── */
   .hdg { font-size: clamp(28px, 7vw, 48px) !important; }
 
+  /* ── About stats: larger numbers for visual weight on mobile ── */
+  .about-stat-num { font-size: clamp(48px, 13vw, 72px) !important; }
+
   /* ── Prevent horizontal overflow ── */
   main section { overflow-x: hidden; }
+
+  /* ── Scroll reveal: re-enable on mobile with lighter animation
+     (GPU-friendly: opacity + translate only, no blur or scale) ── */
+  .rv {
+    opacity: 0 !important;
+    transform: translateY(24px) !important;
+    transition: opacity .6s var(--ease-expo), transform .6s var(--ease-expo) !important;
+  }
+  .rv.on { opacity: 1 !important; transform: translateY(0) !important; }
 }
 
 /* ═══════════════════════════════════════════

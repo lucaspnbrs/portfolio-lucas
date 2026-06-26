@@ -226,12 +226,39 @@ export default function Hero() {
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
 
-    // Mobile: video plays as ambient looping background — no scroll scrub.
-    // Scroll scrubbing is a desktop-only feature; on mobile extra section
-    // height creates a visual "vão" when the sticky releases.
+    // Mobile: ambient loop + parallax depth — video floats slower than the
+    // section as it exits the viewport, giving a sense of cinematic depth.
     if ('ontouchstart' in window) {
       video.loop = true;
-      return;
+      video.style.willChange = 'transform';
+      video.style.transform = 'scale(1.12)'; // headroom so translateY never exposes edges
+
+      const onScroll = () => {
+        const rect = wrapper.getBoundingClientRect();
+        const h    = window.innerHeight;
+        // 0 while section is fully visible; rises to 1 as section exits upward
+        const p = Math.max(0, Math.min(1, -rect.top / h));
+        video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
+        const hc = heroContentRef.current;
+        if (hc) {
+          if (p > 0) {
+            hc.style.opacity   = String(Math.max(0, 1 - p * 2));
+            hc.style.transform = `translateY(${-p * 65}px)`;
+          } else {
+            hc.style.opacity   = '';
+            hc.style.transform = '';
+          }
+        }
+      };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+        video.style.willChange = '';
+        video.style.transform  = '';
+        const hc = heroContentRef.current;
+        if (hc) { hc.style.opacity = ''; hc.style.transform = ''; }
+      };
     }
 
     let rafId: number | null = null;

@@ -48,6 +48,34 @@ function SoundButton({ on, onClick }: { on: boolean; onClick: () => void }) {
   );
 }
 
+function StatNum({ value, suffix, style, className }: { value: number; suffix: string; style?: React.CSSProperties; className?: string }) {
+  const elRef = useRef<HTMLDivElement>(null);
+  const done  = useRef(false);
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || done.current) return;
+      done.current = true;
+      obs.disconnect();
+      const dur = 1500;
+      const t0  = performance.now();
+      const tick = (now: number) => {
+        const t     = Math.min((now - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        el.textContent = Math.floor(eased * value) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.6 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [value, suffix]);
+
+  return <div ref={elRef} style={style} className={className}>{value}{suffix}</div>;
+}
+
 export default function About() {
   const wrapperRef = useRef<HTMLElement>(null);
   const videoRef   = useRef<HTMLVideoElement>(null);
@@ -61,10 +89,29 @@ export default function About() {
     const content = contentRef.current;
     if (!video || !wrapper || !content) return;
 
-    // Mobile: video plays as ambient looping background — no scroll scrub.
+    // Mobile: ambient loop + parallax depth — same cinematic layering as Hero.
     if ('ontouchstart' in window) {
       video.loop = true;
-      return;
+      video.style.willChange = 'transform';
+      video.style.transform  = 'scale(1.12)';
+
+      const onScroll = () => {
+        const rect = wrapper.getBoundingClientRect();
+        const h    = window.innerHeight;
+        const p    = Math.max(0, Math.min(1, -rect.top / h));
+        video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
+        const sv = stickyRef.current;
+        if (sv) sv.style.opacity = p > 0 ? String(Math.max(0, 1 - p * 2)) : '';
+      };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+        video.style.willChange = '';
+        video.style.transform  = '';
+        const sv = stickyRef.current;
+        if (sv) sv.style.opacity = '';
+      };
     }
 
     let rafId: number | null = null;
@@ -331,19 +378,24 @@ export default function About() {
               flexShrink: 0,
             }}>
               {[
-                { num: "3+",  label: "Anos" },
-                { num: "15+", label: "Projetos" },
-                { num: "2",   label: "Setores" },
+                { value: 3,  suffix: "+", label: "Anos" },
+                { value: 15, suffix: "+", label: "Projetos" },
+                { value: 2,  suffix: "",  label: "Setores" },
               ].map(stat => (
                 <div key={stat.label} style={{ textAlign: "right" }}>
-                  <div style={{
-                    fontFamily: "var(--f-display)",
-                    fontSize: "clamp(32px, 4.5vw, 60px)",
-                    fontWeight: 900,
-                    lineHeight: 1,
-                    letterSpacing: "-.04em",
-                    color: "var(--text)",
-                  }}>{stat.num}</div>
+                  <StatNum
+                    value={stat.value}
+                    suffix={stat.suffix}
+                    className="about-stat-num"
+                    style={{
+                      fontFamily: "var(--f-display)",
+                      fontSize: "clamp(32px, 4.5vw, 60px)",
+                      fontWeight: 900,
+                      lineHeight: 1,
+                      letterSpacing: "-.04em",
+                      color: "var(--text)",
+                    }}
+                  />
                   <div style={{
                     fontFamily: "var(--f-body)",
                     fontSize: 10, letterSpacing: "2.5px",
