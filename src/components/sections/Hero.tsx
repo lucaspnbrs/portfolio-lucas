@@ -226,9 +226,6 @@ export default function Hero() {
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
 
-    // Mobile: ambient loop + parallax via continuous RAF.
-    // getBoundingClientRect() is always accurate on iOS — no scroll-event
-    // dependency, so this works even when Lenis/syncTouch doesn't fire window.scroll.
     if ('ontouchstart' in window) {
       video.loop = true;
       video.style.willChange = 'transform';
@@ -280,8 +277,6 @@ export default function Hero() {
     };
     document.addEventListener("touchstart", unlockVideo, { once: true, passive: true });
 
-    // Pause autoPlay immediately when enough data is ready so the video stays at
-    // frame-0 until the user scrolls (prevents the first seek from jumping).
     const pauseAtStart = () => { video.pause(); video.currentTime = 0; };
     video.addEventListener('canplay', pauseAtStart, { once: true });
 
@@ -290,7 +285,7 @@ export default function Hero() {
         const target = pendingTime;
 
         if (!video.muted) {
-          // Sound on: always keep playing; match speed to scroll velocity.
+
           const rate = scrollVel * video.duration;
           video.playbackRate = scrollVel > 0.1 ? Math.min(3.5, Math.max(0.5, rate)) : 1;
           if (video.paused) video.play().catch(() => {});
@@ -298,7 +293,6 @@ export default function Hero() {
             video.currentTime = target;
           }
         } else {
-          // Muted scrub: use currentTime for frame-accurate seeking (no keyframe jumps).
           if (!video.paused) video.pause();
           video.currentTime = target;
         }
@@ -307,9 +301,9 @@ export default function Hero() {
       rafId = null;
     };
 
-    // Run immediately — no longer gated on video loading
+
     const ctx = gsap.context(() => {
-      // Entrance animation — runs on mount regardless of video state
+
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.from(lineRef.current,   { scaleX: 0, duration: .9, delay: .3, transformOrigin:"left" })
         .from(eyebrowRef.current, { y: 16, opacity: 0, duration: .6 }, "-=.4")
@@ -318,7 +312,6 @@ export default function Hero() {
         .from(subRef.current,     { y: 20, opacity: 0, duration: .7 }, "-=.55")
         .from(ctasRef.current,    { y: 16, opacity: 0, duration: .6 }, "-=.5");
 
-      // ScrollTrigger for video scrubbing — onUpdate guards readyState internally
       const st = ScrollTrigger.create({
         trigger: wrapper,
         start: "top top",
@@ -334,8 +327,6 @@ export default function Hero() {
           lastProgress = self.progress;
           lastProgressTime = now;
 
-          // Fade hero content out smoothly in the last 25% of scroll so the
-          // text exits gracefully instead of abruptly snapping away.
           const hc = heroContentRef.current;
           if (hc) {
             const p = self.progress;
@@ -500,7 +491,7 @@ export default function Hero() {
 
           <div ref={ctasRef} className="hero-ctas" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
             <a href="#projects" className="btn btn--hi btn--lg">Ver projetos</a>
-            <a href="#contact"  className="btn btn--ghost btn--lg">Fale comigo →</a>
+            <a href="https://w.app/znqtuc"target="_blank"  className="btn btn--ghost btn--lg">Fale comigo →</a>
           </div>
         </div>
 
