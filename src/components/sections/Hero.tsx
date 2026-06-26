@@ -226,34 +226,41 @@ export default function Hero() {
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
 
-    // Mobile: ambient loop + parallax depth — video floats slower than the
-    // section as it exits the viewport, giving a sense of cinematic depth.
+    // Mobile: ambient loop + parallax via continuous RAF.
+    // getBoundingClientRect() is always accurate on iOS — no scroll-event
+    // dependency, so this works even when Lenis/syncTouch doesn't fire window.scroll.
     if ('ontouchstart' in window) {
       video.loop = true;
       video.style.willChange = 'transform';
-      video.style.transform = 'scale(1.12)'; // headroom so translateY never exposes edges
+      video.style.transform  = 'scale(1.12)';
 
-      const onScroll = () => {
+      let rafId: number;
+      let lastP = -1;
+
+      const tick = () => {
         const rect = wrapper.getBoundingClientRect();
         const h    = window.innerHeight;
-        // 0 while section is fully visible; rises to 1 as section exits upward
-        const p = Math.max(0, Math.min(1, -rect.top / h));
-        video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
-        const hc = heroContentRef.current;
-        if (hc) {
-          if (p > 0) {
-            hc.style.opacity   = String(Math.max(0, 1 - p * 2));
-            hc.style.transform = `translateY(${-p * 65}px)`;
-          } else {
-            hc.style.opacity   = '';
-            hc.style.transform = '';
+        const p    = Math.max(0, Math.min(1, -rect.top / h));
+        if (Math.abs(p - lastP) > 0.0005) {
+          lastP = p;
+          video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
+          const hc = heroContentRef.current;
+          if (hc) {
+            if (p > 0) {
+              hc.style.opacity   = String(Math.max(0, 1 - p * 2));
+              hc.style.transform = `translateY(${-p * 65}px)`;
+            } else {
+              hc.style.opacity   = '';
+              hc.style.transform = '';
+            }
           }
         }
+        rafId = requestAnimationFrame(tick);
       };
+      rafId = requestAnimationFrame(tick);
 
-      window.addEventListener('scroll', onScroll, { passive: true });
       return () => {
-        window.removeEventListener('scroll', onScroll);
+        cancelAnimationFrame(rafId);
         video.style.willChange = '';
         video.style.transform  = '';
         const hc = heroContentRef.current;
@@ -389,7 +396,7 @@ export default function Hero() {
           }}
         />
 
-        <div aria-hidden="true" style={{
+        <div aria-hidden="true" className="hero-overlay" style={{
           position:"absolute", inset:0, zIndex:1,
           background:`linear-gradient(
             to bottom,

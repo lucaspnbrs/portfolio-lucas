@@ -342,6 +342,29 @@ canvas { display: block }
   /* ── Typography ── */
   .hdg { font-size: clamp(28px, 7vw, 48px) !important; }
 
+  /* ── Hero: larger, more dramatic title + show the video (less opaque overlay) ── */
+  .hero-title { font-size: clamp(56px, 16vw, 138px) !important; line-height: .86 !important; }
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(19,41,61,.60)  0%,
+      rgba(19,41,61,.38) 28%,
+      rgba(19,41,61,.52) 56%,
+      rgba(19,41,61,.90) 78%,
+      rgba(19,41,61,1.0) 100%
+    ) !important;
+  }
+  .about-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(19,41,61,.50)  0%,
+      rgba(19,41,61,.28) 28%,
+      rgba(19,41,61,.42) 56%,
+      rgba(19,41,61,.88) 76%,
+      rgba(19,41,61,.98) 100%
+    ) !important;
+  }
+
   /* ── About stats: larger numbers for visual weight on mobile ── */
   .about-stat-num { font-size: clamp(48px, 13vw, 72px) !important; }
 

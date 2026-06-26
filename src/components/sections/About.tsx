@@ -89,24 +89,31 @@ export default function About() {
     const content = contentRef.current;
     if (!video || !wrapper || !content) return;
 
-    // Mobile: ambient loop + parallax depth — same cinematic layering as Hero.
+    // Mobile: ambient loop + parallax via continuous RAF.
     if ('ontouchstart' in window) {
       video.loop = true;
       video.style.willChange = 'transform';
       video.style.transform  = 'scale(1.12)';
 
-      const onScroll = () => {
+      let rafId: number;
+      let lastP = -1;
+
+      const tick = () => {
         const rect = wrapper.getBoundingClientRect();
         const h    = window.innerHeight;
         const p    = Math.max(0, Math.min(1, -rect.top / h));
-        video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
-        const sv = stickyRef.current;
-        if (sv) sv.style.opacity = p > 0 ? String(Math.max(0, 1 - p * 2)) : '';
+        if (Math.abs(p - lastP) > 0.0005) {
+          lastP = p;
+          video.style.transform = `scale(1.12) translateY(${p * 55}px)`;
+          const sv = stickyRef.current;
+          if (sv) sv.style.opacity = p > 0 ? String(Math.max(0, 1 - p * 2)) : '';
+        }
+        rafId = requestAnimationFrame(tick);
       };
+      rafId = requestAnimationFrame(tick);
 
-      window.addEventListener('scroll', onScroll, { passive: true });
       return () => {
-        window.removeEventListener('scroll', onScroll);
+        cancelAnimationFrame(rafId);
         video.style.willChange = '';
         video.style.transform  = '';
         const sv = stickyRef.current;
@@ -275,7 +282,7 @@ export default function About() {
           }}
         />
 
-        <div aria-hidden="true" style={{
+        <div aria-hidden="true" className="about-overlay" style={{
           position: "absolute", inset: 0, zIndex: 1,
           background: `linear-gradient(
             to bottom,
