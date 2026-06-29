@@ -28,7 +28,7 @@ const PROJECTS = [
     title: "Site Empresarial\n+ Automação",
     description: "Site Empresarial para posicionamento de marca. Performático otimizado para desktop, tablet e mobile. Uma automação foi feita com o intuito de ser um braço de compliance em conjunto com o sistema",
     tags: ["Next.js", "TypeScript", "N8N", "Motion React"],
-    year: "2024", link: "https://arboviroses-front.vercel.app/", linkLabel: "GitHub", linkDisabled: false,
+    year: "2024", link: "https://grupoferreirasupermercados.com.br/", linkLabel: "GitHub", linkDisabled: false,
     accent: "#247BA0",
     gradient: "linear-gradient(140deg,#050e18 0%,#081520 50%,#0d3d55 100%)",
   },
