@@ -272,7 +272,7 @@ export default function About() {
 
         <video
           ref={videoRef}
-          src={`${STORAGE}/2-dobrasite-scrub.mp4`}
+          src={'/2-dobrasite-scrub.mp4'}
           autoPlay muted playsInline preload="auto"
           aria-hidden="true"
           style={{

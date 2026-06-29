@@ -377,7 +377,7 @@ export default function Hero() {
 
         <video
           ref={videoRef}
-          src={`${STORAGE}/videosite_scrub.mp4`}
+          src={'/videosite_scrub.mp4'}
           autoPlay muted playsInline preload="auto"
           aria-hidden="true"
           style={{
